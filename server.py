@@ -1,0 +1,22 @@
+from flask import Flask
+from flask import render_template
+from flask_socketio import SocketIO
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your-secret-key'
+socketio = SocketIO(app)
+
+@app.route("/chatbot")
+def chatbot():
+    return render_template("chat2.0.html")
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
+
+@socketio.on('message')
+def handle_message(data):
+    print(data)
+    socketio.send(data)
+
+if __name__ == '__main__':
+    socketio.run(app)
