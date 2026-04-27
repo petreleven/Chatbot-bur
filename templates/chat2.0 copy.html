@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divine Chat UI</title>
+
+    <style>
+        /* Cosmic Gradient Background */
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at 20% 20%, #1a1a2e, #0f0f1a, #000);
+            overflow: hidden;
+        }
+
+        /* Floating Glow Orbs */
+        body::before, body::after {
+            content: "";
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+        }
+
+        body::before {
+            background: #007bff;
+            top: -100px;
+            left: -100px;
+        }
+
+        body::after {
+            background: #ff00cc;
+            bottom: -100px;
+            right: -100px;
+        }
+
+        #chatContainer {
+            width: 100%;
+            max-width: 900px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(20px);
+            background: rgba(30, 30, 40, 0.6);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8),
+                        0 0 80px rgba(0, 123, 255, 0.2);
+            border: 1px solid rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+
+        #chatBox {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* Message bubbles */
+        #chatBox p {
+            max-width: 75%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Received */
+        #chatBox p {
+            align-self: flex-start;
+            background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+            color: #fff;
+            border-bottom-left-radius: 6px;
+        }
+
+        /* Sent override inline already works */
+
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background: rgba(20,20,30,0.7);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            gap: 10px;
+            position: relative;
+            z-index: 10;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 30px;
+            border: none;
+            outline: none;
+            background: rgba(255,255,255,0.08);
+            color: white;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+
+        input:focus {
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 0 10px rgba(0,123,255,0.6);
+        }
+
+        button {
+            border: none;
+            padding: 0 22px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #007bff, #00d4ff);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,123,255,0.4);
+            position: relative;
+            z-index: 10;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,123,255,0.7);
+        }
+
+        /* Scrollbar */
+        #chatBox::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #chatBox::-webkit-scrollbar-thumb {
+            background: linear-gradient(#007bff, #00d4ff);
+            border-radius: 10px;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="chatContainer">
+    <div id="chatBox"></div>
+    <div class="input-area">
+        <input id="messageBox" placeholder="Speak into the void...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+</body>
+
+<script>
+    let myId = Math.floor(Math.random() * 1000);
+
+    let socket = io();
+    function triggerConnection(){
+        console.log('connected');
+    }
+    socket.on('connect', triggerConnection)
+    function sendMessage(){
+        let message = document.getElementById('messageBox').value;
+        let data = {
+            id: myId,
+            message: message
+        }
+        socket.emit('message', data);
+        document.getElementById('messageBox').value = '';
+    }
+
+    socket.on('message', handle_message)
+    function handle_message(data){
+        let chatBox = document.getElementById('chatBox');
+        if(data.id === myId){
+            chatBox.insertAdjacentHTML('beforeend', `<p style="align-self: flex-end; background: linear-gradient(135deg,#007bff,#00d4ff); border-bottom-right-radius:6px;">${data.message}</p>`);
+        } else {
+            chatBox.insertAdjacentHTML('beforeend', `<p>${data.message}</p>`);
+        }
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+</html>
