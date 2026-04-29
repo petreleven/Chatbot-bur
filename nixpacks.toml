@@ -1,2 +1,2 @@
 [start]
-cmd = "gunicorn --timeout 300 --workers 1 --worker-class geventwebsocket.gunicorn.workers.GeventWebSocketWorker --bind 0.0.0.0:$PORT main:app"
+cmd = "gunicorn --worker-class eventlet --workers 1 --bind 0.0.0.0:$PORT main:app"
