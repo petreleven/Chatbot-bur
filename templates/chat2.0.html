@@ -121,8 +121,9 @@
 </body>
 <script>
     let myId = Math.floor(Math.random() * 1000);
-
-    let socket = io();
+    let socket = io({
+  transports: ["polling", "websocket"]
+});
     function triggerConnection(){
         console.log('connected');
     }
