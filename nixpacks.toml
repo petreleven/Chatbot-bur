@@ -1,2 +1,2 @@
 [start]
-cmd = "gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:$PORT main:socketio"
+cmd = "gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:$PORT main:app"
