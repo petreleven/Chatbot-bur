@@ -3,8 +3,8 @@ from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key"
-socketio = SocketIO(app, async_mode="eventlet")
 
+socketio = SocketIO(app)
 @app.route("/chatbot")
 def chatbot():
     return render_template("chat2.0.html")
