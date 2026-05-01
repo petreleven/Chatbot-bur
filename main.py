@@ -1,12 +1,12 @@
-import eventlet
-eventlet.monkey_patch()
+from gevent import monkey
+monkey.patch_all()  # Must be FIRST, before everything
 
 from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key"
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="gevent")
 
 @app.route("/chatbot")
 def chatbot():
@@ -19,7 +19,7 @@ def handle_connect():
 @socketio.on("message")
 def handle_message(data):
     print(f"Received: {data}")
-    socketio.emit("message", data)  # emit() not send()
+    socketio.emit("message", data)
 
 if __name__ == "__main__":
     socketio.run(app)
