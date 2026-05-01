@@ -1,12 +1,9 @@
-from gevent import monkey
-monkey.patch_all()  # Must be FIRST, before everything
-
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key"
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="gevent")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 
 @app.route("/chatbot")
 def chatbot():
